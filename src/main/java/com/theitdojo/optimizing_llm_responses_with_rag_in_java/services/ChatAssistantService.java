@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import reactor.core.publisher.Flux;
+
 @Service
 public class ChatAssistantService implements ChatAssistant {
     private final ChatClient chatClient;
@@ -44,14 +46,14 @@ public class ChatAssistantService implements ChatAssistant {
     }
 
     @Override
-    public Stream<String> askQuestionWithContext(String conversationId, String question) {
+    public Flux<String> askQuestionWithContext(String conversationId, String question) {
         // TODO: Implementar la lógica de RAG en un futuro ejercicio.
-        return chatClient.prompt()
-                .user(question)
+        // Cambiamos a Flux para soportar el streaming reactivo hacia la UI de Vaadin.
+        return this.chatClient.prompt()
                 .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .user(question)
                 .stream()
-                .content()
-                .toStream();
+                .content();
     }
 
 }
