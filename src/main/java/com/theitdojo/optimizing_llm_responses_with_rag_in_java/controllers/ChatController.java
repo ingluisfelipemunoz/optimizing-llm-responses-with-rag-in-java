@@ -14,7 +14,7 @@ import com.theitdojo.optimizing_llm_responses_with_rag_in_java.services.ChatAssi
 @RestController
 @RequestMapping("/ai")
 public class ChatController {
-    Logger logger = LoggerFactory.getLogger(ChatController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
     private final ChatAssistant chatAssistant;
 
     public ChatController(ChatAssistant chatAssistant) {
@@ -23,10 +23,13 @@ public class ChatController {
 
     @GetMapping("/chat")
     public String chat(@RequestParam String message, @RequestParam(defaultValue = "false") boolean stream) {
-        Stream<String> response = chatAssistant.askQuestion(message, stream);
+        // El valor fijo en CONVERSATION_ID simula el identificador utilizado en tu
+        // sistema para tus usuarios.
+        Stream<String> responseStream = chatAssistant.askQuestion("CONVERSATION_ID", message, stream);
+
         StringBuilder responseBuilder = new StringBuilder();
 
-        response.forEach(chunk -> {
+        responseStream.forEach(chunk -> {
             logger.info(chunk);
             responseBuilder.append(chunk);
         });
